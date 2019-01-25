@@ -30,17 +30,13 @@ class UserProducer() {
   }
 
   val producer = new KafkaProducer[String, User](KafkaProducerConfigs().properties)
-  val schema: Schema = new Parser().parse(Source.fromResource("schema.avsc").mkString)
 
   def send(topic: String, users: List[User]): Unit = {
     try {
       val queueMessages = users.map { user =>
-        println(s"sending ${user}")
         val record = new ProducerRecord[String,User](topic , user)
-        println(record)
         producer.send(record)
       }
-
     } catch {
       case ex: Exception =>
         println(ex.printStackTrace().toString)

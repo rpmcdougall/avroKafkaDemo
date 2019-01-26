@@ -20,8 +20,6 @@ class UserProducer() {
     properties.put("acks", "all")
     properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
                    classOf[StringSerializer].getCanonicalName)
-
-    //set value serializer to avro serializer
     properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
                    classOf[KafkaAvroSerializer].getCanonicalName)
     properties.put("client.id", UUID.randomUUID().toString)
@@ -33,7 +31,7 @@ class UserProducer() {
 
   def send(topic: String, users: List[User]): Unit = {
     try {
-      val queueMessages = users.map { user =>
+      users.map { user =>
         val record = new ProducerRecord[String, User](topic, user)
         producer.send(record)
       }

@@ -2,6 +2,15 @@
 
 
 # Setting Up Dev Environment
+
+### Via Docker Compose
+
+In the root directory of this project:
+```
+docker-compose up -d
+```
+
+### Via Confluent Platform
 Install Confluent Platform
 https://www.confluent.io/download/
 

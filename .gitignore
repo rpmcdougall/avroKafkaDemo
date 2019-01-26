@@ -30,3 +30,4 @@ build
 #general
 *.class
 src/main/resources/avrohugger-tools_2.12-1.0.0-RC15-assembly.jar
+full-stack

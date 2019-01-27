@@ -29,38 +29,7 @@ bin/kafka-avro-console-consumer --bootstrap-server localhost:9092 --topic demo-t
 
 ### Defining an Avro Schema
 
-Avro Schema Docs: https://avro.apache.org/docs/1.8.1/spec.html
-
-Example
-```
-{
-    "namespace": "kakfa-avro.test",
-     "type": "record",
-     "name": "user",
-     "fields":[
-         {
-            "name": "id", "type": "int"
-         },
-         {
-            "name": "name",  "type": "string"
-         },
-         {
-            "name": "email", "type": ["string", "null"]
-         }
-     ]
-}
-```
-
-
-### Generating a AvroSpecific Class File using AvroHugger
-
-- Download AvroHugger Tools https://github.com/julianpeeters/avrohugger#avrohugger-tools
-
-
- ```
- java -jar avrohugger-tools_2.12-1.0.0-RC15-assembly.jar generate-specific schema schema.avsc .
- ```
- 
+Schema is derived using Avro4s serializer.
  
 ### Produce Records
 For this project with the pre-generated User schema class run the `ProducerApp` object in the `com.rm.demoapps` package.

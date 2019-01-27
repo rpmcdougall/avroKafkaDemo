@@ -1,48 +1,35 @@
 package com.rm.Producer
 
-import java.util.{Properties, UUID}
+import com.ovoenergy.kafka.serialization.core._
+import com.ovoenergy.kafka.serialization.avro4s._
 import com.rm.Domain.User
-import io.confluent.kafka.serializers.KafkaAvroSerializer
-import org.apache.kafka.clients.producer.{
-  KafkaProducer,
-  ProducerConfig,
-  ProducerRecord
-}
-import org.apache.kafka.common.serialization.StringSerializer
+import com.sksamuel.avro4s._
+import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
+import org.apache.kafka.clients.CommonClientConfigs._
+
+import scala.collection.JavaConverters._
 
 
 class UserProducer() {
 
-  case class KafkaProducerConfigs() {
-    val properties = new Properties()
-    properties.put("bootstrap.servers", "127.0.0.1:9092")
-    properties.put("message.send.max.retries", "5")
-    properties.put("acks", "all")
-    properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
-                   classOf[StringSerializer].getCanonicalName)
-    properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
-                   classOf[KafkaAvroSerializer].getCanonicalName)
-    properties.put("client.id", UUID.randomUUID().toString)
-    properties.put("schema.registry.url", "http://127.0.0.1:8081")
-  }
+  val schemaRegistryEndpoint = "http://localhost:8081"
 
-  val producer =
-    new KafkaProducer[String, User](KafkaProducerConfigs().properties)
+  implicit val UserToRecord = ToRecord[User]
 
-  def send(topic: String, users: List[User]): Unit = {
-    try {
-      users.map { user =>
-        val record = new ProducerRecord[String, User](topic, user)
-        producer.send(record)
-      }
-    } catch {
-      case ex: Exception =>
-        println(ex.printStackTrace().toString)
-        ex.printStackTrace()
-    } finally {
-      producer.close()
+  val producer = new KafkaProducer(
+    Map[String, AnyRef](BOOTSTRAP_SERVERS_CONFIG->"localhost:9092").asJava,
+    nullSerializer[String],
+    avroBinarySchemaIdSerializer[User](schemaRegistryEndpoint, isKey = false, includesFormatByte = true)
+  )
+
+
+  def send(topic: String, users: List[User]) = {
+    users.map { user =>
+      val record = new ProducerRecord[String, User](topic, user)
+      producer.send(record)
     }
-
+    producer.close()
   }
+
 
 }
